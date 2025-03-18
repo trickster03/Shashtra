@@ -7,7 +7,7 @@ from utils.config import REGIONS
 def get_text_embedding_model():
     vertexai.init(project=os.getenv("PROJECT_ID"), location=REGIONS[random.randint(0, 25)])  # Initialize Vertex AI
     
-    model = "models/text-embedding-004"
+    model = "models/embedding-001"
     
     return model
 

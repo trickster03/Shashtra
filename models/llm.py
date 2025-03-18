@@ -8,7 +8,7 @@ from google.generativeai import GenerativeModel
 load_dotenv()
 
 
-async def get_model(temperature=0.3, top_p=0.7, top_k=40, max_output_tokens=1024):
+def get_model(temperature=0.3, top_p=0.7, top_k=40, max_output_tokens=1024):
     vertexai.init(project=os.getenv("PROJECT_ID"), location=REGIONS[random.randint(0, 25)])  # Initialize Vertex AI
     
     generation_config = {
