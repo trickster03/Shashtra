@@ -1,5 +1,8 @@
 from google.cloud import firestore
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_async_database():
     try:
