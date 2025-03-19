@@ -36,3 +36,6 @@ def get_pinecone_index(name="chats-db", dimension=768):
     # Connect to the index
     print(f"Connecting to index '{name}'")
     return pc.Index(name)
+
+
+pinecone_index = get_pinecone_index()

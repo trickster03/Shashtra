@@ -1,9 +1,9 @@
 from storage.db import get_async_database
-from storage.redis import get_redis_client
+from storage.redis import redis_client
 from models.embedding import get_embedding
 from models.llm import get_model
-from storage.pinecone import get_pinecone_index
-
+from storage.pinecone import pinecone_index
+from middlewares.evaluation import evaluator
 async def get_chat_response(user_id: str, session_id: str, data: str):
     # try:
     #     # db = get_async_database()
@@ -11,7 +11,7 @@ async def get_chat_response(user_id: str, session_id: str, data: str):
     # except Exception as e:
     #     print(f"Error adding message to database: {e}")
     #     return "Error processing your request."
-
+    start_time = evaluator.start_timer()
     try:
         user_message_embedding = get_embedding(data)
     except Exception as e:
@@ -19,7 +19,7 @@ async def get_chat_response(user_id: str, session_id: str, data: str):
         return "Error processing your request."
 
     try:
-        pinecone_results = get_pinecone_index().query(
+        pinecone_results = pinecone_index.query(
             vector=user_message_embedding,  # Use 'vector' keyword
             top_k=5,
             include_metadata=True,
@@ -37,7 +37,6 @@ async def get_chat_response(user_id: str, session_id: str, data: str):
     # context = " ".join([r["metadata"]["text"] for r in pinecone_results["matches"]])
 
     try:
-        redis_client = get_redis_client()
         recent_history = redis_client.lrange(f"chat_history:{user_id}:{session_id}", 0, 10)
         recent_history = [message.decode('utf-8') for message in recent_history]
         print(recent_history)
@@ -80,6 +79,23 @@ async def get_chat_response(user_id: str, session_id: str, data: str):
     try:
         response = get_model().generate_content(prompt)
         response_text = response.text
+        metrics = evaluator.evaluate_response(
+            user_query=data,
+            response=response_text,
+            context=context,
+            session_id=session_id,
+            start_time=start_time
+        )
+        print("metrics: ",metrics)
+        evaluator._store_time_metrics("latency_seconds", metrics["latency_seconds"])
+        print("latency_seconds: ",metrics["latency_seconds"])
+        # Only store relevance metrics if they exist and aren't None
+        if metrics.get("query_response_relevance") is not None:
+            evaluator._store_time_metrics("query_relevance", metrics["query_response_relevance"])
+        
+        if metrics.get("context_relevance") is not None:
+            evaluator._store_time_metrics("context_relevance", metrics["context_relevance"])
+    
     except Exception as e:
         print(f"Error generating content: {e}")
         return "Error processing your request."

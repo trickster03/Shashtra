@@ -11,3 +11,6 @@ def get_redis_client():
         raise e
     return redis_client
 
+
+redis_client = get_redis_client()
+

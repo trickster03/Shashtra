@@ -3,6 +3,12 @@ from fastapi import FastAPI
 from routes.routes import router as chat_router
 from fastapi.middleware.cors import CORSMiddleware
 from storage.redis import get_redis_client
+from services.logger import configure_logging
+import logging
+
+configure_logging()
+logger = logging.getLogger(__name__)
+
 app = FastAPI(
     title="Shashtra API",
     description="API for chat application with authentication",
@@ -28,15 +34,21 @@ app.include_router(chat_router, prefix="/api")
 
 @app.get("/", tags=["Health"])
 async def health_check():
+    """Health check endpoint for monitoring"""
     try:
-        print("Checking Redis connection")
-        get_redis_client().ping()
-        print("Redis connection successful")
-        return {"status": "healthy"}
+        logger.info("Checking Redis connection")
+        redis_status = get_redis_client().ping()
+        
+        return {
+            "status": "healthy", 
+            "services": {
+                "redis": "connected" if redis_status else "disconnected"
+            }
+        }
     except Exception as e:
-        print(f"Redis connection failed: {e}")
+        logger.error(f"Health check failed: {e}")
         return {"status": "unhealthy", "error": str(e)}
 
-
 if __name__ == "__main__":
+    logger.info("Starting Shashtra API server")
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
