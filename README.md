@@ -1,4 +1,4 @@
-# 🚀 Shashtra: Intelligent Conversational AI
+# 🚀 Shashtra: Sarvam ai assignment
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://your-build-system.com/shashtra)  [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/release/python-390/)
@@ -62,7 +62,7 @@ This section provides a concise overview of Shashtra's key features, underlying 
 *   **Cache:** Redis
 *   **Authentication:** JWT (JSON Web Tokens)
 *   **Communication:** WebSockets
-*   **Framework (Likely):** Flask or FastAPI (Specify if known)
+*   **Framework:** FastAPI
 
 ### Design Philosophy
 
@@ -99,7 +99,7 @@ Shashtra is built upon these core principles:
 1.  **Clone the repository:**
 
     ```bash
-    git clone [https://github.com/your-username/shashtra.git](https://github.com/your-username/shashtra.git)  # Replace with your repo URL
+    git clone https://github.com/trickster03/Shashtra.git
     cd shashtra
     ```
 
