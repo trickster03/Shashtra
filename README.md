@@ -28,115 +28,138 @@ Shashtra's architecture is designed for modularity, scalability, and resilience.
 ![Untitled diagram-2025-03-19-184320](https://github.com/user-attachments/assets/661a1188-4d86-4082-8442-72012c4ea7f2)
 
 
-Clients: Users interact via a web interface or API clients.
-API Gateway/Load Balancer: (Highly recommended for production) Handles request routing, load balancing, and SSL termination.
-Authentication Service: Manages user authentication and authorization using JWTs.
-Chat Service: The core logic. Processes queries, interacts with Redis, Pinecone, and Gemini, and generates responses. Multiple instances can be deployed.
-Redis Cache: Stores conversation context (short-term memory) for fast retrieval.
-Pinecone Vector Database: Stores and retrieves knowledge embeddings for semantic search (long-term knowledge), enabling Retrieval-Augmented Generation (RAG).
-Google Gemini AI Model: Provides the natural language understanding and generation capabilities.
-Evaluation Metrics: Persists complete metrics and session metrics.
-Key Features
-Natural Language Understanding: Engages in coherent and contextually relevant conversations.
-Knowledge-Based Responses: Provides accurate information retrieved from a dedicated knowledge base.
-Contextual Memory: Remembers past interactions for personalized experiences.
-Real-time Communication: Uses WebSockets for instant, bidirectional interaction.
-Secure Authentication: Employs JWT authentication to protect API endpoints.
-Scalable Architecture: Designed to handle increasing loads through horizontal scaling.
-Performance Monitoring: Tracks key metrics like response time, relevance, and context utilization.
-RAG Implementation
-Technology Stack
-Programming Language: Python 3.9+
-AI Model: Google Gemini
-Vector Database: Pinecone
-Cache: Redis
-Authentication: JWT (JSON Web Tokens)
-Communication: WebSockets
-Framework (Likely): Flask or FastAPI (This can be specified if you know which one is used)
-Design Philosophy
-Shashtra is built on these core principles:
+## Key Features, Technologies, Design, and Usage of Shashtra
 
-Modularity: Independent services for maintainability and scalability.
-Scalability: Horizontal scaling of key components.
-Context Awareness: Maintaining conversation history for personalized interactions.
-Knowledge Integration: Leveraging a large knowledge base for accurate responses.
-Security: Secure access through JWT authentication.
-Real-time Interaction: Low-latency communication with WebSockets.
-Best-in-Class AI: Utilizing Google's Gemini for superior language processing.
-Scalability and Performance
-Horizontal Scaling: The Chat Service can be scaled horizontally by deploying multiple instances behind a load balancer.
-Redis Clustering: Redis can be clustered for distributed context storage and improved resilience.
-Pinecone Scalability: Pinecone is a managed service designed for high performance and scalability.
-Round-Robin Load Balancing (Gemini): Requests to the Gemini model are distributed using a Round-Robin algorithm across multiple instances, maximizing throughput (RPM).
-Prompt Engineering: Carefully crafted prompts optimize the quality and efficiency of Gemini's responses.
-Temperature Control: The temperature parameter is adjusted to control the randomness and focus of Gemini's output.
-Getting Started
-Prerequisites
+This section provides a concise overview of Shashtra's key features, underlying technologies, design principles, scalability, performance considerations, and basic usage instructions.  It's designed to be a developer-friendly summary within a larger README.
 
-Python 3.9 or higher
-Redis server
-Pinecone account (and API key)
-Google Cloud account (and API key for Gemini)
-Installation
+### Architecture Components
 
-Clone the repository:
+*   **Clients:** Users interact with Shashtra through a web interface or via API clients.
+*   **API Gateway/Load Balancer:** (Production Recommended) Handles request routing, load balancing across Chat Service instances, and SSL termination.
+*   **Authentication Service:** Manages user authentication and authorization using JWTs.
+*   **Chat Service:**  The core application logic. Processes queries, interacts with data stores (Redis, Pinecone), and the Gemini AI model, and generates responses.  Designed for horizontal scaling.
+*   **Redis Cache:** Stores conversation context (short-term memory) for fast retrieval, enabling personalized interactions.
+*   **Pinecone Vector Database:** Stores and retrieves knowledge embeddings, enabling semantic search and Retrieval-Augmented Generation (RAG) for accurate, knowledge-based responses.
+*   **Google Gemini AI Model:** Provides the natural language understanding and generation capabilities.
+*   **Evaluation Metrics:** Stores and provides access to performance metrics.
 
-Bash
-git clone [https://github.com/your-username/shashtra.git](https://github.com/your-username/shashtra.git)  # Replace with your actual repo URL
-cd shashtra
- Create a .env file:
-Create a .env file in the root directory and add your API keys and configuration settings:
+### Key Features
 
-Plaintext
-PROJECT_ID=your-google-cloud-project-id
-PINECONE_API_KEY=your-pinecone-api-key
-PINECONE_ENVIRONMENT=gcp-starter
-JWT_SECRET_KEY=your-jwt-secret-key  # Choose a strong secret key!
-REDIS_HOST=localhost
-REDIS_PORT=6379
- IMPORTANT:  Do not commit your .env file to version control!
+*   **Natural Language Understanding:**  Processes and understands complex user input, going beyond simple keyword matching.
+*   **Knowledge-Based Responses:** Leverages a dedicated knowledge base (Pinecone) for accurate and informative answers.
+*   **Contextual Memory:**  Remembers past interactions to provide a personalized and efficient conversational experience.
+*   **Real-time Communication:**  Utilizes WebSockets for instant, bidirectional communication.
+*   **Secure Authentication:** Employs JWT authentication to protect API endpoints.
+*   **Scalable Architecture:**  Designed for horizontal scaling to handle increasing user loads.
+*   **Performance Monitoring:**  Tracks key metrics to ensure optimal performance and identify areas for improvement.
+*   **RAG Implementation:** Uses Retrieval-Augmented Generation to combine knowledge retrieval with language generation.
 
-Install dependencies:
+### Technology Stack
 
-Bash
-pip install -r requirements.txt
-Usage
-Authentication
+*   **Programming Language:** Python 3.9+
+*   **AI Model:** Google Gemini
+*   **Vector Database:** Pinecone
+*   **Cache:** Redis
+*   **Authentication:** JWT (JSON Web Tokens)
+*   **Communication:** WebSockets
+*   **Framework (Likely):** Flask or FastAPI (Specify if known)
 
-Before interacting with the chat API, users must authenticate:
+### Design Philosophy
 
-Registration: POST /api/signup (Requires email, name, password)
-Login: POST /api/login (Requires email, password)
-Both endpoints return a JWT upon successful authentication. This token must be included in subsequent requests.
+Shashtra is built upon these core principles:
 
-Chat Interaction (WebSocket)
+*   **Modularity:**  Independent, well-defined services for improved maintainability, testability, and scalability.
+*   **Scalability:**  Designed for horizontal scaling of key components (especially the Chat Service).
+*   **Context Awareness:**  Prioritizes maintaining conversation history for personalized and efficient interactions.
+*   **Knowledge Integration:**  Integrates a robust knowledge base to ensure accurate and informative responses.
+*   **Security:**  Employs JWT authentication for secure access control.
+*   **Real-time Interaction:**  Uses WebSockets for low-latency communication.
+*   **Best-in-Class AI:**  Leverages Google's Gemini for state-of-the-art language processing.
 
-The primary interaction with Shashtra is through a WebSocket connection:
+### Scalability and Performance
 
-Endpoint: /api/chat
+*   **Horizontal Scaling:**  The Chat Service can be scaled horizontally by deploying multiple instances behind a load balancer.
+*   **Redis Clustering:**  Redis can be configured in a cluster for distributed context storage and increased resilience.
+*   **Pinecone Scalability:**  Pinecone is a managed service built for high performance and scalability.
+*   **Round-Robin Load Balancing (Gemini):**  Requests to the Gemini model are distributed using a Round-Robin algorithm to maximize throughput.
+*   **Prompt Engineering:**  Carefully crafted prompts are used to optimize the quality and efficiency of Gemini's responses.
+*   **Temperature Control:**  The `temperature` parameter is tuned to control the randomness and focus of Gemini's output.
 
-Query Parameters:
+### Getting Started
 
-session_id: A unique identifier for the conversation session.
-token: The JWT obtained during authentication.
-Message Format (JSON):
+#### Prerequisites
 
-JSON
-{
-    "message": "User's input here"
-}
- Shashtra will respond with a JSON object in a similar format:
+*   Python 3.9 or higher
+*   Redis server running
+*   Pinecone account (and API key)
+*   Google Cloud account (and API key for Gemini)
 
-JSON
-{
-    "message": "Shashtra's response"
-}
-API Documentation
-Authentication
-POST /api/signup : Register User.
-POST /api/login: Get JWT Token.
-Chat
-WebSocket /api/chat?session_id={session_id}&token={token}
-Metrics
-GET /api/metrics: Overall system metrics.
-GET /api/metrics/sessions/{session_id}: Session-specific metrics.
+#### Installation
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone [https://github.com/your-username/shashtra.git](https://github.com/your-username/shashtra.git)  # Replace with your repo URL
+    cd shashtra
+    ```
+
+2.  **Create a `.env` file:**
+    Create a `.env` file in the project's root directory and add your API keys and configuration:
+
+    
+    **IMPORTANT:**  Do *not* commit your `.env` file to version control!  Add `.env` to your `.gitignore` file.
+
+3.  **Install dependencies:**
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+### Usage
+
+#### Authentication
+
+Users must authenticate before interacting with the chat API:
+
+*   **Registration:** `POST /api/signup`  (Requires `email`, `name`, `password` in the request body)
+*   **Login:** `POST /api/login` (Requires `email`, `password` in the request body)
+
+Both endpoints return a JWT upon successful authentication.  This token *must* be included in subsequent requests to the chat API.
+
+#### Chat Interaction (WebSocket)
+
+The primary interaction with Shashtra is via a WebSocket connection:
+
+*   **Endpoint:** `/api/chat`
+*   **Query Parameters:**
+    *   `session_id`:  A unique identifier for the conversation session (UUID recommended).
+    *   `token`: The JWT obtained during authentication.
+
+*   **Message Format (JSON):**
+
+    **Sending a message (Client to Server):**
+
+    ```json
+    {
+        "message": "User's input here"
+    }
+    ```
+
+    **Receiving a message (Server to Client):**
+
+    ```json
+    {
+        "message": "Shashtra's response"
+    }
+    ```
+
+### API Documentation
+
+*   **Authentication**
+    *   `POST /api/signup`: Register a new user.
+    *   `POST /api/login`: Obtain a JWT token.
+*   **Chat**
+    *   `WebSocket /api/chat?session_id={session_id}&token={token}`:  Establish a real-time chat connection.
+* **Metrics**
+     *   `GET /api/metrics`: Overall system metrics.
+     *    `GET /api/metrics/sessions/{session_id}`: Session-specific metrics.
