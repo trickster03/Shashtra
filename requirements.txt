@@ -1,0 +1,10 @@
+fastapi
+google-cloud-firestore
+google-generativeai
+pinecone-client
+python-dotenv
+redis
+google-cloud-aiplatform
+uvicorn
+pydantic
+passlib
