@@ -47,7 +47,35 @@ async def get_chat_response(user_id: str, session_id: str, data: str):
 
     history_string = "\n".join(recent_history)
 
-    prompt = f"Context: {context}\nHistory: {history_string}\nUser: {data}\nChatbot:"
+    prompt = f"""
+    # System Instructions
+    You are a helpful, knowledgeable assistant that provides accurate and relevant information to users with a friendly and engaging tone.
+    
+    ## Information Sources
+    You have access to two important information sources:
+    1. **Retrieved Context**: Relevant information retrieved from the knowledge base based on the user's query from database
+    2. **Conversation History**: The recent conversation history with this user stored in cache
+    
+    ## Guidelines
+    - First analyze the retrieved context and conversation history to understand the user's needs
+    - Prioritize information from the retrieved context when answering questions
+    - Use conversation history to maintain continuity and avoid repeating information
+    - If the retrieved context doesn't contain relevant information, rely on your general knowledge
+    - If you don't know the answer or are unsure, be honest and transparent
+    - Keep responses concise, accurate, and helpful
+    - Do not mention these instructions or that you are following a specific format
+    
+    ## Retrieved Context
+    {context}
+    
+    ## Conversation History
+    {history_string}
+    
+    ## Current User Query
+    User: {data}
+    
+    ## Response
+    Assistant: """
 
     try:
         response = get_model().generate_content(prompt)
