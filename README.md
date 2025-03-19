@@ -25,31 +25,9 @@ Shashtra is a powerful, context-aware conversational AI system designed to deliv
 ## Architecture
 
 Shashtra's architecture is designed for modularity, scalability, and resilience.  It follows a microservices-oriented approach:
+![Untitled diagram-2025-03-19-184320](https://github.com/user-attachments/assets/661a1188-4d86-4082-8442-72012c4ea7f2)
 
-```mermaid
-graph LR
-    subgraph Clients
-        A[Web Browser] -- HTTP --> B;
-        C[API Client] -- WebSocket --> B;
-    end
-    B[API Gateway/Load Balancer] --> D(Authentication Service);
-    B --> E(Chat Service);
-    D -->|Generates/Validates| F[JWT Tokens];
-    E --> G(Redis Cache);
-    E --> H(Pinecone Vector Database);
-    E --> I(Google Gemini AI Model);
-    E --> J(Evaluation Metrics)
-    G -->|Contextual Memory| E;
-    H -->|Knowledge Retrieval| E;
-    I -->|Response Generation| E;
-   
 
-    style D fill:#f9f,stroke:#333,stroke-width:2px
-    style E fill:#ccf,stroke:#333,stroke-width:2px
-    style G fill:#cfc,stroke:#333,stroke-width:2px
-    style H fill:#cff,stroke:#333,stroke-width:2px
-    style I fill:#ffc,stroke:#333,stroke-width:2px
-    style J fill:#FCC,stroke:#333,stroke-width:2px
 Clients: Users interact via a web interface or API clients.
 API Gateway/Load Balancer: (Highly recommended for production) Handles request routing, load balancing, and SSL termination.
 Authentication Service: Manages user authentication and authorization using JWTs.
