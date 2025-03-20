@@ -7,7 +7,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/arcane-storm-443513-r8/shastraui:amd64']
 
-  # Deploy the backend to Cloud Run
+  # Deploy the backend to Cloud Run //
   - name: 'google/cloud-sdk:latest'
     entrypoint: gcloud
     args:
