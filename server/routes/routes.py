@@ -13,6 +13,7 @@ from services.signup import signup_user
 import time
 import logging
 import json
+from services.getSessionId import generate_session_id
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -60,6 +61,12 @@ async def get_model_metrics(user_id: str = Depends(verify_jwt_token)):
         logger.error(f"Error retrieving metrics: {e}")
         return {"error": str(e)}
 
+@router.get("/session_id")
+async def get_session_id(user_id: str = Depends(verify_jwt_token)):
+    """Get a new session ID"""
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return generate_session_id()
 
 @router.get("/metrics/sessions/{session_id}")
 async def get_session_metrics(session_id: str, user_id: str = Depends(verify_jwt_token)):

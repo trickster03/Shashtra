@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from routes.routes import router as chat_router
 from fastapi.middleware.cors import CORSMiddleware
-from storage.redis import get_redis_client
+from storage.redis import redis_client
 from services.logger import configure_logging
 import logging
 
@@ -37,7 +37,7 @@ async def health_check():
     """Health check endpoint for monitoring"""
     try:
         logger.info("Checking Redis connection")
-        redis_status = get_redis_client().ping()
+        redis_status = redis_client.ping()
         
         return {
             "status": "healthy", 
