@@ -1,18 +1,22 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { TextField, Button, Paper, Typography, Box, IconButton, InputAdornment } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { TextField, Button, Paper, Typography, Box, IconButton, InputAdornment ,CircularProgress} from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../redux/features/auth/authSlice';
 import { motion } from 'framer-motion';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
 
 const Login = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  const loading = useSelector((state) => state.auth.loading);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,11 +24,8 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      dispatch(login(formData));
-    } catch (error) {
-      console.error('Login failed:', error);
-    }
+    await dispatch(login(formData)); // Send email and password to login service
+    navigate('/'); // Redirect to the home route on successful login
   };
 
   return (
@@ -198,7 +199,7 @@ const Login = () => {
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
             >
-              <Button
+          <Button
                 type="submit"
                 fullWidth
                 variant="contained"
@@ -210,7 +211,7 @@ const Login = () => {
                   fontWeight: 600
                 }}
               >
-                Sign In
+                {loading ? <CircularProgress size={20} sx={{ color: '#138808' }} /> : "Sign In"}
               </Button>
             </motion.div>
           </form>

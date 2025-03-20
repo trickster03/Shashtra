@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const api = axios.create({
-    // baseURL: "https://backend-1087119049852.us-central1.run.app",
+    baseURL: "https://shastra-service-410805250566.us-central1.run.app",
     // baseURL: "http://localhost:8080",
     // timeout: 5000,
     headers: {

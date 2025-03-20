@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { TextField, Button, Paper, Typography, Box, IconButton, InputAdornment } from '@mui/material';
+import { TextField, Button, Paper, Typography, Box, IconButton, InputAdornment ,CircularProgress} from '@mui/material';
 import { Link } from 'react-router-dom';
 import { signup } from '../redux/features/auth/authSlice';
 import { motion } from 'framer-motion';
 import { Visibility, VisibilityOff, Email, Lock, Person } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -20,6 +22,10 @@ const Signup = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const navigate = useNavigate();
+
+  const loading = useSelector((state) => state.auth.loading);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -352,7 +358,7 @@ const Signup = () => {
                   fontWeight: 600
                 }}
               >
-                Sign Up
+                {loading ? <CircularProgress size={20} sx={{ color: '#138808' }} /> : "Sign Up"}
               </Button>
             </motion.div>
           </form>
