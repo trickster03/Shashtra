@@ -12,7 +12,9 @@ import {
   CircularProgress,
   IconButton,
   Avatar,
-  Slide
+  Slide,
+  Dialog,
+  DialogContent
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
@@ -21,6 +23,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import MenuIcon from '@mui/icons-material/Menu';
 import { motion } from 'framer-motion';
 import Sidebar from '../components/sidebar';
+import LockIcon from '@mui/icons-material/Lock';
 
 // Add these styled components at the top of your file
 const ChatHeader = styled(Box)(({ theme }) => ({
@@ -111,8 +114,18 @@ const Home = () => {
   const messageEndRef = useRef(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [newSessionAnimation, setNewSessionAnimation] = useState(false);
+  const [openLoginDialog, setOpenLoginDialog] = useState(false);
   const dispatch = useDispatch();
   const socketRef = useRef(null); // Reference to the WebSocket
+  const [isThinking, setIsThinking] = useState(false);  // Add this new state
+
+  // Check for token validity
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setOpenLoginDialog(true);
+    }
+  }, []);
 
   // Add a dependency array to prevent infinite re-renders
   useEffect(() => {
@@ -122,7 +135,7 @@ const Home = () => {
   // Load initial data from localStorage or query params
   useEffect(() => {
     const loadInitialData = () => {
-        const savedSessions = JSON.parse(localStorage.getItem('chatSessions') || '[]');
+      const savedSessions = JSON.parse(localStorage.getItem('chatSessions') || '[]');
       const sessionIdFromQuery = new URLSearchParams(location.search).get('session_id');
 
       if (sessionIdFromQuery) {
@@ -136,10 +149,10 @@ const Home = () => {
         localStorage.setItem('chatSessions', JSON.stringify([...savedSessions, newSession]));
         dispatch(websocketConnect(`wss://your-websocket-url/api/chat?session_id=${sessionIdFromQuery}`));
       } else if (savedSessions.length > 0) {
-          setChatSessions(savedSessions);
-          setCurrentSession(savedSessions[0]);
-          const savedMessages = JSON.parse(localStorage.getItem(`messages_${savedSessions[0].id}`) || '[]');
-          setMessages(savedMessages);
+        setChatSessions(savedSessions);
+        setCurrentSession(savedSessions[0]);
+        const savedMessages = JSON.parse(localStorage.getItem(`messages_${savedSessions[0].id}`) || '[]');
+        setMessages(savedMessages);
       }
     };
 
@@ -162,13 +175,14 @@ const Home = () => {
         // Try to parse the incoming message as JSON
         try {
           newMessage = JSON.parse(event.data);
-    } catch (error) {
+        } catch (error) {
           console.warn('Received non-JSON message:', event.data); // Log the non-JSON message
           newMessage = { content: event.data, sender: 'ai', timestamp: new Date().toISOString() }; // Create a message object
         }
 
         console.log('Received message:', newMessage); // Log the incoming message
         setMessages((prevMessages) => [...prevMessages, newMessage]); // Update state with the new message
+        setIsThinking(false); // Stop loading indicator when response received
       };
 
       socketRef.current.onerror = (error) => {
@@ -189,6 +203,12 @@ const Home = () => {
   }, [currentSession]);
 
   const createNewSession = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setOpenLoginDialog(true);
+      return;
+    }
+
     try {
       const randomSessionId = `session_${Math.random().toString(36).substr(2, 9)}`; // Generate a random session ID
       setNewSessionAnimation(true);
@@ -244,18 +264,33 @@ const Home = () => {
       timestamp: new Date().toISOString()
     };
     
-    // Update messages state
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setInput('');
+    setIsThinking(true); // Start loading indicator
 
     // Send the message to the WebSocket
     if (socketRef.current) {
       socketRef.current.send(JSON.stringify(userMessage));
     }
     
-    // Save to localStorage
     localStorage.setItem(`messages_${currentSession.id}`, JSON.stringify([...messages, userMessage]));
   };
+
+  // Add this new component for the thinking indicator
+  const ThinkingIndicator = () => (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <MessageBubble sender="ai">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CircularProgress size={20} thickness={5} sx={{ color: '#666' }} />
+          <Typography sx={{ color: '#666' }}>Thinking...</Typography>
+        </Box>
+      </MessageBubble>
+    </motion.div>
+  );
 
   return (
     <div className="min-h-screen flex overflow-hidden">
@@ -265,6 +300,7 @@ const Home = () => {
         onClose={() => setSidebarOpen(false)}
         onCreateNewSession={createNewSession}
         onLogout={handleLogout}
+        navigate={navigate}
       />
       
       {/* Main Content - ChatGPT-like Interface */}
@@ -275,18 +311,26 @@ const Home = () => {
         className="flex-1 flex flex-col h-screen bg-gradient-to-br from-[#FF9933]/5 via-white to-[#138808]/5 backdrop-blur-sm relative z-10"
       >
         {/* Menu Button for Mobile */}
-        {/* <IconButton
-          className="lg:hidden absolute top-4 left-4 z-50"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
+        <IconButton
+          className="block lg:hidden absolute top-4 left-4 z-50"
+          onClick={() => setSidebarOpen(true)}
+          sx={{ 
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 1)',
+            },
+            boxShadow: '0 2px 8px rgba(255, 153, 51, 0.15)',
+            display: { lg: 'none' }
+          }}
         >
-          <MenuIcon />
-        </IconButton> */}
+          <MenuIcon sx={{ color: '#FF9933' }} />
+        </IconButton>
         
         {currentSession ? (
           <Box className="flex flex-col h-full">
             <ChatHeader>
               <Box className="flex items-center justify-between">
-                <Box className="flex items-center gap-3">
+                <Box className="flex items-center gap-3 ml-14 lg:ml-0"> {/* Add margin-left for mobile */}
                   <Avatar 
                     sx={{ 
                       bgcolor: 'transparent',
@@ -332,6 +376,7 @@ const Home = () => {
                   </MessageBubble>
                 </motion.div>
               ))}
+              {isThinking && <ThinkingIndicator />}
               <div ref={messageEndRef} />
             </MessageContainer>
 
@@ -394,11 +439,12 @@ const Home = () => {
           </Box>
         ) : (
           <Box className="flex-1 flex items-center justify-center p-8">
+            {/* Add margin-top for mobile view to account for menu button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-center"
+              className="text-center mt-8 lg:mt-0"
             >
               <Avatar
                 sx={{ 
@@ -434,6 +480,83 @@ const Home = () => {
           </Box>
         )}
       </motion.div>
+
+      {/* Login Dialog */}
+      <Dialog 
+        open={openLoginDialog} 
+        disableEscapeKeyDown 
+        PaperProps={{ 
+          style: { 
+            width: '400px', 
+            borderRadius: '16px',
+            padding: '24px',
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.98))',
+            boxShadow: '0 8px 32px rgba(255, 153, 51, 0.15)',
+          } 
+        }}
+      >
+        <DialogContent sx={{ 
+          textAlign: 'center', 
+          padding: '32px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 3
+        }}>
+          <Avatar
+            sx={{ 
+              width: 70,
+              height: 70,
+              backgroundColor: 'transparent',
+              background: 'linear-gradient(135deg, #FF9933, #f97316)',
+              marginBottom: 2
+            }}
+          >
+            <LockIcon sx={{ fontSize: 35, color: 'white' }} />
+          </Avatar>
+          <Typography 
+            variant="h5" 
+            sx={{ 
+              fontWeight: 600,
+              color: '#1a1a1a',
+              marginBottom: 1
+            }}
+          >
+            Authentication Required
+          </Typography>
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              color: '#666',
+              marginBottom: 3,
+              maxWidth: '280px'
+            }}
+          >
+            Please log in to access the chat features and start your conversation
+          </Typography>
+          <Button 
+            variant="contained" 
+            onClick={() => navigate('/auth/login')} 
+            fullWidth
+            sx={{ 
+              background: 'linear-gradient(135deg, #FF9933, #f97316)', 
+              color: 'white', 
+              padding: '12px',
+              borderRadius: '8px',
+              textTransform: 'none',
+              fontSize: '1rem',
+              fontWeight: 500,
+              '&:hover': { 
+                background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 4px 12px rgba(249, 115, 22, 0.25)'
+              } 
+            }}
+          >
+            Login to Continue
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

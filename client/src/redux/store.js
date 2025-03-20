@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../redux/features/auth/authSlice';
+import metricsReducer from '../redux/features/metrics/metricSlice';
 
 // Add local storage utility functions
 const loadState = () => {
@@ -29,6 +30,7 @@ const preloadedState = loadState();
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    metrics: metricsReducer,
   },
   preloadedState,
 });

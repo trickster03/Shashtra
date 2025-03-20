@@ -7,6 +7,7 @@ export const loginApi = async (credentials) => {
     
     // Store user access directly in localStorage
     localStorage.setItem('access', JSON.stringify(response.data.user_access));
+   
     console.log(response.data.user_access);
     return response.data;
     

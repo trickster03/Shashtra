@@ -12,6 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import { motion } from 'framer-motion';
 
 // Styled components
@@ -23,9 +24,12 @@ const SidebarContainer = styled(Box)(({ theme, isCollapsed }) => ({
   background: 'rgba(255, 255, 255, 0.95)',
   backdropFilter: 'blur(20px)',
   borderRight: '2px solid rgba(255, 153, 51, 0.15)',
-  position: 'relative',
+  position: 'fixed',
+  top: 0,
+  left: 0,
   transition: 'width 0.3s ease',
   overflow: 'hidden',
+  zIndex: 1200,
 }));
 
 const HeaderContainer = styled(Box)(({ theme }) => ({
@@ -55,7 +59,8 @@ const Sidebar = ({
   open, 
   onClose, 
   onCreateNewSession, 
-  onLogout
+  onLogout,
+  navigate
 }) => {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
 
@@ -64,7 +69,7 @@ const Sidebar = ({
   };
 
   const sidebarContent = (
-    <SidebarContainer isCollapsed={isCollapsed}>
+    <SidebarContainer isCollapsed={isCollapsed} className="fixed top-0 left-0">
       <HeaderContainer>
         <Box className="flex items-center justify-between mb-4">
           <Typography variant="h5" className={`font-bold text-amber-900 ${isCollapsed ? 'hidden' : 'block'}`} align="center">
@@ -112,6 +117,57 @@ const Sidebar = ({
       {/* Empty space in the middle */}
       <Box sx={{ flex: 1 }} />
 
+      {/* Metrics Section */}
+      <Box 
+        sx={{
+          padding: '16px',
+          width: '100%',
+          borderTop: '1px solid rgba(255, 153, 51, 0.15)',
+          background: 'linear-gradient(135deg, rgba(255, 153, 51, 0.05), rgba(255, 255, 255, 0.95))',
+        }}
+      >
+        {!isCollapsed ? (
+          <Button
+            startIcon={<BarChartIcon sx={{ color: 'white' }} />}
+            onClick={() => navigate('/metrics')}
+            fullWidth
+            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 
+            py-3.5 text-lg font-semibold rounded-xl shadow-lg transition-all duration-200 
+            hover:shadow-orange-500/20 hover:shadow-xl"
+            sx={{ 
+              textTransform: 'none',
+              fontWeight: 600,
+              marginBottom: 2,
+              color: 'white',
+              '& .MuiButton-startIcon': {
+                color: 'white'
+              }
+            }}
+          >
+            Metrics
+          </Button>
+        ) : (
+          <IconButton
+            onClick={() => navigate('/metrics')}
+            sx={{ 
+              width: '48px',
+              height: '48px',
+              marginBottom: 2,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              display: 'block',
+              background: 'linear-gradient(135deg, #FF9933, #f97316)',
+              color: 'white',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #f97316, #ea580c)',
+              }
+            }}
+          >
+            <BarChartIcon />
+          </IconButton>
+        )}
+      </Box>
+
       {/* Logout section at the bottom */}
       <Box 
         className="mt-auto"
@@ -155,7 +211,7 @@ const Sidebar = ({
   return (
     <>
       {/* Desktop Sidebar */}
-      <Box className="hidden lg:block h-full">
+      <Box className="hidden lg:block" sx={{ width: isCollapsed ? 80 : 300, flexShrink: 0 }}>
         {sidebarContent}
       </Box>
 
