@@ -35,7 +35,7 @@ This section provides a concise overview of Shashtra's key features, underlying 
 ### Architecture Components
 
 * **Clients:** Users interact with Shashtra through a web interface or via API clients.
-* **API Gateway/Load Balancer:** (Production Recommended) Handles request routing, load balancing across Chat Service instances, and SSL termination.
+* **API Gateway:** Handles request routing, load balancing across Chat Service instances.
 * **Authentication Service:** Manages user authentication and authorization using JWTs.
 * **Chat Service:** The core application logic. Processes queries, interacts with data stores (Redis, Pinecone), and the Gemini AI model, and generates responses.  Designed for horizontal scaling.
 * **Redis Cache:** Stores conversation context (short-term memory) for fast retrieval, enabling personalized interactions.
