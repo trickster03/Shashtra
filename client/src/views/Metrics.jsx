@@ -26,7 +26,7 @@ const Metrics = () => {
         dispatch(fetchMetrics());
     }, [dispatch]);
 
-    // Prepare data for the latency over time chart //
+    // Prepare data for the latency over time chart ////
     const prepareLatencyData = (data) => {
         if (!data?.latency_over_time) return [];
         return data.latency_over_time.map(item => ({
