@@ -79,7 +79,6 @@ Shashtra is built upon these core principles:
 
 ### Scalability and Performance
 
-* **Horizontal Scaling:** The Chat Service can be scaled horizontally by deploying multiple instances behind a load balancer.
 * **Redis Clustering:** Redis can be configured in a cluster for distributed context storage and increased resilience.
 * **Pinecone Scalability:** Pinecone is a managed service built for high performance and scalability.
 * **Round-Robin Load Balancing (Gemini):** Requests to the Gemini model are distributed using a Round-Robin algorithm to maximize throughput.
@@ -105,7 +104,7 @@ Shashtra is built upon these core principles:
     cd shashtra
     ```
 
-2.  **Create a `.env` file:**
+2.  **Create a `.env` file in server folder:**
     Create a `.env` file in the project's root directory and add your API keys and configuration:
 
     ```
