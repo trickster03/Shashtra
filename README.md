@@ -1,4 +1,4 @@
-# 🚀 Shashtra: Sarvam.ai Assignment
+# 🚀 Shashtra: Conversational AI chatbot- made for Sarvam.ai
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://your-build-system.com/shashtra)  [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/release/python-390/)
@@ -59,11 +59,11 @@ This section provides a concise overview of Shashtra's key features, underlying 
 * **Programming Language:** Python 3.9+
 * **AI Model:** Google Gemini
 * **Vector Database:** Pinecone
-* **Cache:** Redis
+* **Cache Storage:** Redis
 * **Authentication:** JWT (JSON Web Tokens)
 * **Communication:** WebSockets
 * **Backend Framework:** FastAPI
-* **Frontend Library:** React (or similar)
+* **Frontend Library:** React
 
 ### Design Philosophy
 
