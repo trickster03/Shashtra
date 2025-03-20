@@ -22,11 +22,6 @@ steps:
       - 'managed'
       # Add other deployment flags as needed
 
-# Substitutions
-substitutions:
-  _REGION: us-central1
-  _ENV: dev
-  _SERVICE_URL_SUFFIX: run.app
 
 # Images
 images:
